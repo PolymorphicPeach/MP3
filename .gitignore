@@ -1,0 +1,7 @@
+*.log
+.idea/
+x64/
+Lab09.sln
+Lab09.sln.DotSettings.user
+Lab09.vcxproj
+Lab09.vcxproj.filters
