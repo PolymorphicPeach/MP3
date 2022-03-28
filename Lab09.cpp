@@ -15,12 +15,14 @@ struct songAndArtist{
 
 class MP3{
 private:
+    //I wanted to make a dynamically sized array on object construction, but it seems impossible
+    // or maybe it's just above my head right now.
     songAndArtist savedSongs[100];
     int numberOfSongs {0};
     
 public:
     MP3(int &numSongs) {
-        //On creation, the MP3 object will have a savedSongs array of songAndArtist structs
+        //Used to determine how many songs are actually on this MP3 object
         this->numberOfSongs = numSongs;
     }
     void displaySongs();
