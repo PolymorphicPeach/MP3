@@ -24,7 +24,7 @@ public:
         this->numberOfSongs = numSongs;
     }
     void displaySongs();
-
+    int mp3Menu();
     
 };
 
@@ -90,4 +90,25 @@ void MP3::displaySongs() {
              << savedSongs[i].artist << "-  " << savedSongs[i].songTitle << endl;
         
     }
+}
+
+int MP3::mp3Menu() {
+    string menuInputRaw {"Unset"};
+    int menuInput{0};
+
+    do{
+        cout << "==================================================================================" << endl 
+             << "Make one of the following selections with the number on the right of each option." << endl
+             << "Options:" << endl
+             << "1.) Add a Song (You can add " << 100 - numberOfSongs << " more songs)" << endl
+             << "2.) Delete a Song" << endl
+             << "3.) Display my Songs by Artist name" << endl
+             << "4.) Display my Songs by Song title" << endl
+             << "5.) I'm done with this MP3 Player (exit)" << endl
+             << "My Selection: ";
+        getline(cin, menuInputRaw);
+        cin.clear();
+        menuInput = posIntegerConvert(menuInputRaw);
+        // no input < 1  or  no input > 5 or no input == 1 if at than 100 songs
+    }while(menuInput < 1 || menuInput > 5 || (menuInput == 1 && numberOfSongs >= 100));
 }
