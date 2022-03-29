@@ -43,10 +43,12 @@ public:
     //Menu methods
     void addSong();
     void deleteSong();
+    void sortByArtistName();
+    void sortBySongTitle();
     
 };
 
-
+string lowerCaseConvert(string);
 int posIntegerConvert(string);
 
 
@@ -70,7 +72,7 @@ int main(int argc, char* argv[]) {
     myMP3->mp3Menu();
     myMP3->addSong();
     myMP3->deleteSong();
-    myMP3->displaySongs();
+    myMP3->sortByArtistName();
     
     return 0;
 }
@@ -207,4 +209,120 @@ void MP3::deleteSong() {
         
     }while(response == "Y" || response == "y"); //repeat if y
     
+}
+
+//==========================================================================
+//                        Sorting Methods
+//==========================================================================
+// Mostly using the inbuilt string1.compare(string2) method:
+//  - returns -1 if string1 comes before string2 **alphabetically
+//  - returns 1 if string2 comes before string1 **aphabetically 
+//  - returns 0 if equal
+//  - Numbers come before letters
+//  - **ALL capital letters come before ALL lowercase letters (uh oh...), A-Z before a-z
+//
+// std::tolower( ) can be used on strings, but it only takes one character as a parameter, not the entire string
+// std::tolower(string1) INCORRECT
+// std::tolower(string1[i]) CORRECT
+//
+// I'll have to convert the original strings into all-lowercase versions by using std::tolower( ) to
+// change each individual character.
+// This seems to be worth making a function for alone
+
+string lowerCaseConvert(string originalString) {
+    string lowerCaseVersion; // Empty string initalized
+
+    // Loops through the original and concatenates each character to the blank string above
+    for (int i = 0; i < originalString.length(); i++){
+        lowerCaseVersion += std::tolower(originalString[i]);
+    }
+    return lowerCaseVersion; 
+}
+
+
+void MP3::sortByArtistName() {
+    bool doItAgain {false};
+    songAndArtist temporaryHolder;
+    
+    // numberOfSongs - 1 because the loop will use i and i + 1 - I don't want to reach the very last song == i
+    for(int i = 0; i < numberOfSongs - 1; i++){
+        string lowerCaseArtist1; // These need to be initialized empty every loop
+        string lowerCaseArtist2;
+        lowerCaseArtist1 = lowerCaseConvert(savedSongs[i].artist);
+        lowerCaseArtist2 = lowerCaseConvert(savedSongs[i+1].artist);
+
+        // if lowerCaseArtist1 comes before lowerCaseArtist2, -1 will be returned
+        // this loop iterates if lowerCaseArtist2 comes before lowerCaseArtist1
+        //
+        // lowerCaseArtist1 = savedSongs[i]  |  lowerCaseArtist2 = savedSongs[i + 1]
+        if(lowerCaseArtist1.compare(lowerCaseArtist2) == 1){
+            doItAgain = true;
+            temporaryHolder = savedSongs[i];
+            savedSongs[i] = savedSongs[i+1];
+            savedSongs[i+1] = temporaryHolder;
+        }
+        else if(lowerCaseArtist1.compare(lowerCaseArtist2) == 0){ //Same artist different songs scenario
+            string lowerCaseSong1;
+            string lowerCaseSong2;
+            lowerCaseSong1 = lowerCaseConvert(savedSongs[i].songTitle);
+            lowerCaseSong2 = lowerCaseConvert(savedSongs[i+1].songTitle);
+            if(lowerCaseSong1.compare(lowerCaseSong2) == 1){
+                temporaryHolder = savedSongs[i];
+                savedSongs[i] = savedSongs[i+1];
+                savedSongs[i+1] = temporaryHolder;
+            }
+        }
+    }
+    // The function will call itself again if the comparison "if" statement was activated
+    // the new order of savedSongs is "saved" because the object is its own scope in a way.
+    // the actual array belonging to the object is modified not a copy.
+    if(doItAgain){
+        sortByArtistName(); //I'm not sure if this is considered recursion or not
+                            // since the function *is* calling itself, *but* it's not
+                            // taking itself as an argument.
+    }
+    else{
+        // I realized this original "displaySongs" function could just be used here, which is nice
+        displaySongs();
+    }
+}
+
+
+//Same function as above, but using Song title instead of artist name
+void MP3::sortBySongTitle() {
+    bool doItAgain {false};
+    songAndArtist temporaryHolder;
+    
+    // numberOfSongs - 1 because the loop will use i and i + 1 - I don't want to reach the very last song == i
+    for(int i = 0; i < numberOfSongs - 1; i++){
+        string lowerCaseSong1; // These need to be initialized empty every loop
+        string lowerCaseSong2;
+        lowerCaseSong1 = lowerCaseConvert(savedSongs[i].songTitle);
+        lowerCaseSong2 = lowerCaseConvert(savedSongs[i+1].songTitle);
+        
+        if(lowerCaseSong1.compare(lowerCaseSong2) == 1){
+            doItAgain = true;
+            temporaryHolder = savedSongs[i];
+            savedSongs[i] = savedSongs[i+1];
+            savedSongs[i+1] = temporaryHolder;
+        }
+        else if(lowerCaseSong1.compare(lowerCaseSong2) == 0){ //Same song different artist scenario
+            string lowerCaseArtist1;
+            string lowerCaseArtist2;
+            lowerCaseArtist1 = lowerCaseConvert(savedSongs[i].artist);
+            lowerCaseArtist2 = lowerCaseConvert(savedSongs[i+1].artist);
+            if(lowerCaseArtist1.compare(lowerCaseArtist2) == 1){
+                temporaryHolder = savedSongs[i];
+                savedSongs[i] = savedSongs[i+1];
+                savedSongs[i+1] = temporaryHolder;
+            }
+        }
+    }
+    if(doItAgain){
+        sortBySongTitle();
+
+    }
+    else{
+        displaySongs();
+    }
 }
