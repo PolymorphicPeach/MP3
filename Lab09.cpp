@@ -184,6 +184,10 @@ int MP3::mp3Menu() {
 void MP3::addSong() {
     string response {"Unset"};
     do{
+        if(numberOfSongs >= 100){ //bugfix
+            cout << endl << "ERROR: Cannot add more than 100 songs!!!" << endl << endl;
+            break;
+        }
         string newSongTitle {"Unset"};
         string newSongArtist {"Unset"};
         cout << "======================================" << endl
@@ -240,6 +244,11 @@ void MP3::deleteSong() {
         songAndArtist temporaryHolder;
         // It's going to swap values "down" until the "Unset" songAndArtist gets to the end
         for (int i = deleteThisIndex; i <= numberOfSongs; i++){
+            if(i == 99){ // Bugfix to stop program from crashing if at 100 songs trying to put the object at index 100
+                savedSongs[99].songTitle = "Unset";
+                savedSongs[99].artist = "Unset";
+                break;
+            }
             temporaryHolder = savedSongs[i];
             savedSongs[i] = savedSongs[i+1];
             savedSongs[i+1] = temporaryHolder;
