@@ -39,7 +39,7 @@ public:
     }
     void displaySongs();
     int mp3Menu();
-
+    
     //Menu methods
     void addSong();
     void deleteSong();
@@ -53,26 +53,63 @@ int posIntegerConvert(string);
 
 
 int main(int argc, char* argv[]) {
-    string userInput {"Unset"};
-    int numberOfSongs {0};
 
+    bool goAgain {false};
+    
     do{
-        cout << "\nHow many songs would you like to initially put on your MP3 player? (maximum of 100)" << endl
-            << "Selection:";
-        getline(cin, userInput);
-        cin.clear();
-        numberOfSongs = posIntegerConvert(userInput);
-    }while (numberOfSongs <= 0 || numberOfSongs > 100);
-    userInput.clear();
+        string userInput {"Unset"};
+        int numberOfSongs {0};
+        string anotherMP3{"Unset"};
+        bool exitMenu {false};
+        
 
-    // Saving the new MP3 object as myMP3
-    MP3 *myMP3 = new MP3(numberOfSongs);
+        do{
+            cout << "\nHow many songs would you like to initially put on your MP3 player?" << endl
+                 << "(maximum of 100)" << endl
+                 << "Selection: ";
+            getline(cin, userInput);
+            cin.clear();
+            numberOfSongs = posIntegerConvert(userInput);
+        }while (numberOfSongs <= 0 || numberOfSongs > 100);
+        userInput.clear();
 
-    myMP3->displaySongs();
-    myMP3->mp3Menu();
-    myMP3->addSong();
-    myMP3->deleteSong();
-    myMP3->sortByArtistName();
+        // Saving the new MP3 object as myMP3
+        MP3 *myMP3 = new MP3(numberOfSongs);
+
+        myMP3->displaySongs(); // To show what the user initially input
+
+        //This works well as a switch statement - next time I might try to build this into the class itself instead of
+        // the main function to try to make the objects more modular
+        do{
+            switch(myMP3->mp3Menu()){
+            case 1 : myMP3->addSong();
+                break;
+            case 2 : myMP3->deleteSong();
+                break;
+            case 3 : myMP3->sortByArtistName();
+                break;
+            case 4 : myMP3->sortBySongTitle();
+                break;
+            case 5 :
+                exitMenu = true;
+                break;
+            default : cout << "Critical ERROR" << endl;
+            }
+        }while(exitMenu == false);
+
+        do{
+            cout << endl
+                 << "=================================================" << endl
+                 << "Would you like to make another MP3 player? (y/n) " << endl
+                 << "My selection: ";
+            getline(cin,anotherMP3);
+            cin.clear();
+        }while(anotherMP3 != "Y" && anotherMP3 != "y" && anotherMP3 != "N" && anotherMP3 != "n");
+        if(anotherMP3 == "Y" || anotherMP3 == "y"){
+            goAgain = true;
+        }
+    }while(goAgain == true);
+    
     
     return 0;
 }
@@ -107,7 +144,9 @@ void MP3::displaySongs() {
             longestArtistName = savedSongs[i].artist.length();
         }
     }
-    
+    cout << "==================================================================================" << endl;
+    //                            + 6 to account for the '.)' and the extra space
+    cout << std::left << std::setw(longestArtistName + 6) << "Artist Name" << "-  Song Title" << endl << endl;
     for(int i = 0; i < numberOfSongs; i++){
         cout << i + 1 << ".) " << std::left << std::setw(longestArtistName + 2)
              << savedSongs[i].artist << "-  " << savedSongs[i].songTitle << endl;
@@ -132,7 +171,11 @@ int MP3::mp3Menu() {
         getline(cin, menuInputRaw);
         cin.clear();
         menuInput = posIntegerConvert(menuInputRaw);
+        
         // no input < 1  or  no input > 5 or no input == 1 if at than 100 songs
+        if(menuInput == 1 && numberOfSongs >= 100){
+            cout << "\n\nERROR: At maximum number of songs - cannot add more" << endl;
+        }
     }while(menuInput < 1 || menuInput > 5 || (menuInput == 1 && numberOfSongs >= 100));
     
     return menuInput;
@@ -283,6 +326,7 @@ void MP3::sortByArtistName() {
     }
     else{
         // I realized this original "displaySongs" function could just be used here, which is nice
+        cout << endl << "Sorting by Artist Name..." << endl;
         displaySongs();
     }
 }
@@ -323,6 +367,7 @@ void MP3::sortBySongTitle() {
 
     }
     else{
+        cout << endl << "Sorting by Song Title..." << endl;
         displaySongs();
     }
 }
