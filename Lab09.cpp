@@ -42,6 +42,7 @@ public:
 
     //Menu methods
     void addSong();
+    void deleteSong();
     
 };
 
@@ -68,8 +69,8 @@ int main(int argc, char* argv[]) {
     myMP3->displaySongs();
     myMP3->mp3Menu();
     myMP3->addSong();
+    myMP3->deleteSong();
     myMP3->displaySongs();
-    
     
     return 0;
 }
@@ -106,7 +107,7 @@ void MP3::displaySongs() {
     }
     
     for(int i = 0; i < numberOfSongs; i++){
-        cout << std::left << std::setw(longestArtistName + 2)
+        cout << i + 1 << ".) " << std::left << std::setw(longestArtistName + 2)
              << savedSongs[i].artist << "-  " << savedSongs[i].songTitle << endl;
         
     }
@@ -161,4 +162,49 @@ void MP3::addSong() {
         }while(response != "Y" && response != "y" && response != "N" && response != "n");
         
     }while(response == "Y" || response == "y"); //repeat if y
+}
+
+// This method is mainly modeled after the addSong method
+void MP3::deleteSong() {
+    string response {"Unset"};
+    string deleteThisRaw {"Unset"};
+    int deleteThisIndex {-1};
+
+    do{
+        if(numberOfSongs <= 0){ //Realized that I needed this to prevent being trapped in this loop forever at 0 songs
+            cout << "\nYou don't have any more songs to delete!!" << endl;
+            break;
+        }
+        displaySongs();
+        do{
+            cout << "Choose the number on the left corresponding to the song you want to delete." << endl
+                 << "Delete Song Number: ";
+            getline(cin, deleteThisRaw);
+            cin.clear();
+            deleteThisIndex = (posIntegerConvert(deleteThisRaw) - 1); // It's easier for me to convert this to an index here
+        }while(deleteThisIndex < 0 || deleteThisIndex >= numberOfSongs);
+
+        // I don't think I can really delete the index that's allocated to the array, so I just reset the
+        // songAndArtist struct back to "Unset" for its values and decrement from numberOfSongs
+        savedSongs[deleteThisIndex].songTitle = "Unset";
+        savedSongs[deleteThisIndex].artist = "Unset";
+        numberOfSongs--;
+        
+        // This is still going to leave song1, song2, Unset, song3, song4 (for example)
+        // So, I'll exchange the "Unset" songAndArtist until it's beyond numberOfSongs
+        songAndArtist temporaryHolder;
+        // It's going to swap values "down" until the "Unset" songAndArtist gets to the end
+        for (int i = deleteThisIndex; i <= numberOfSongs; i++){
+            temporaryHolder = savedSongs[i];
+            savedSongs[i] = savedSongs[i+1];
+            savedSongs[i+1] = temporaryHolder;
+        }
+        do{ //Making sure they actually respond y or n
+            cout << "Delete another song (y/n)? ";
+            getline(cin, response);
+            cin.clear();
+        }while(response != "Y" && response != "y" && response != "N" && response != "n");
+        
+    }while(response == "Y" || response == "y"); //repeat if y
+    
 }
