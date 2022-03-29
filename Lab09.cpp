@@ -22,9 +22,26 @@ public:
     MP3(int &numSongs) {
         //On creation, the MP3 object will have a savedSongs array of songAndArtist structs
         this->numberOfSongs = numSongs;
+        string constructorInput {"Unset"};
+        for(int i = 0; i < numSongs; i++){
+            // Get initial song titles
+            cout << "Enter song title for Song #" << i + 1 << ": ";
+            getline(cin, constructorInput);
+            cin.clear();
+            this->savedSongs[i].songTitle = constructorInput;
+
+            // Get the artist for the song that was just entered
+            cout << "Enter artist that sings " << savedSongs[i].songTitle << ": ";
+            getline(cin, constructorInput);
+            cin.clear();
+            this->savedSongs[i].artist = constructorInput;
+        }
     }
     void displaySongs();
     int mp3Menu();
+
+    //Menu methods
+    void addSong();
     
 };
 
@@ -37,7 +54,7 @@ int main(int argc, char* argv[]) {
     int numberOfSongs {0};
 
     do{
-        cout << "\nHow many songs would you like to put on your MP3 player? (maximum of 100)" << endl
+        cout << "\nHow many songs would you like to initially put on your MP3 player? (maximum of 100)" << endl
             << "Selection:";
         getline(cin, userInput);
         cin.clear();
@@ -48,6 +65,9 @@ int main(int argc, char* argv[]) {
     // Saving the new MP3 object as myMP3
     MP3 *myMP3 = new MP3(numberOfSongs);
 
+    myMP3->displaySongs();
+    myMP3->mp3Menu();
+    myMP3->addSong();
     myMP3->displaySongs();
     
     
@@ -111,4 +131,34 @@ int MP3::mp3Menu() {
         menuInput = posIntegerConvert(menuInputRaw);
         // no input < 1  or  no input > 5 or no input == 1 if at than 100 songs
     }while(menuInput < 1 || menuInput > 5 || (menuInput == 1 && numberOfSongs >= 100));
+    
+    return menuInput;
+}
+
+void MP3::addSong() {
+    string response {"Unset"};
+    do{
+        string newSongTitle {"Unset"};
+        string newSongArtist {"Unset"};
+        cout << "======================================" << endl
+             << "            Adding a Song             " << endl
+             << "======================================" << endl
+             << "Song title: ";
+        getline(cin,newSongTitle);
+        cin.clear();
+        cout << "Artist: ";
+        getline(cin,newSongArtist);
+        cin.clear();
+        // I'm surprised I didn't have to offset numberOFSongs by 1 here, but this is what works
+        savedSongs[numberOfSongs].songTitle = newSongTitle;
+        savedSongs[numberOfSongs].artist = newSongArtist;
+        numberOfSongs++; //Tracking that a new song was added
+        
+        do{ //Making sure they actually respond y or n
+            cout << "Add another song (y/n)? ";
+            getline(cin, response);
+            cin.clear();
+        }while(response != "Y" && response != "y" && response != "N" && response != "n");
+        
+    }while(response == "Y" || response == "y"); //repeat if y
 }
