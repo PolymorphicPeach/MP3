@@ -1,3 +1,15 @@
+//Student: Matthew Peach
+//Program Status: Complete
+// Description:
+//  This program allows you to add up to 100 songs and artists (as structs) to an array belonging to an MP3 object
+// and sort the songs/artists to display in alphabetical order. I'm really happy with this program and from it I
+// learned how to compare C++ strings to put them in alphabetical order and how to make use an array that belongs
+// to an object. I'm trying to practice making more modular classes - I do thnk this one is fairly successful,
+// but if I was to do it again, I would try to integrate the Switch Statement for the mainu menu into the class.
+// It just seemed a bit strange to do that after I already had the mp3Menu method written because my solution would be
+// to pass the mp3Menu method return as an argument into *another* method - maybe a better solution would be to rewrite
+// the mp3Menu method to include more responsibilites.
+
 #include <iostream>
 #include <string>
 #include <iomanip>
@@ -15,14 +27,12 @@ struct songAndArtist{
 
 class MP3{
 private:
-    //I wanted to make a dynamically sized array on object construction, but it seems impossible
-    // or maybe it's just above my head right now.
     songAndArtist savedSongs[100];
     int numberOfSongs {0};
     
 public:
     MP3(int &numSongs) {
-        //Used to determine how many songs are actually on this MP3 object
+        //On creation, the MP3 object will have a savedSongs array of songAndArtist structs
         this->numberOfSongs = numSongs;
         string constructorInput {"Unset"};
         for(int i = 0; i < numSongs; i++){
@@ -54,7 +64,7 @@ string lowerCaseConvert(string);
 int posIntegerConvert(string);
 
 
-int main(int argc, char* argv[]) {
+int main() {
 
     bool goAgain {false};
     
